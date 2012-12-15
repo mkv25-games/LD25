@@ -83,12 +83,6 @@ class TestSubject extends Sprite
 		{
 			target.x = room.boundary.x + (Math.random() * room.boundary.width);
 			target.y = room.boundary.y + (Math.random() * room.boundary.height);
-			
-			walk();
-		}
-		else
-		{
-			Actuate.timer(1.0).onComplete(think);
 		}
 	}
 	
@@ -110,9 +104,12 @@ class TestSubject extends Sprite
 		if (y < target.y) y++;
 		if (y > target.y) y--;
 		
-		stopDrag();
+		if (x == target.x && y == target.y)
+		{
+			frame = FRAME_STANDING;
+		}
+		
 		walking.dispatch(this);
-		think();
 		
 		draw();
 	}
@@ -121,9 +118,7 @@ class TestSubject extends Sprite
 	{
 		frame = FRAME_STANDING;
 		
-		stopDrag();
 		standing.dispatch(this);
-		think();
 		
 		draw();
 	}
@@ -134,8 +129,6 @@ class TestSubject extends Sprite
 		
 		startDrag();
 		pickedUp.dispatch(this);
-		think();
-		
 		draw();
 	}
 	
@@ -148,7 +141,6 @@ class TestSubject extends Sprite
 		
 		stopDrag();
 		fallen.dispatch(this);
-		think();
 		
 		draw();
 	}
@@ -157,7 +149,6 @@ class TestSubject extends Sprite
 	{
 		frame = FRAME_DEAD;
 		
-		stopDrag();
 		dead.dispatch(this);
 		
 		draw();
@@ -173,19 +164,22 @@ class TestSubject extends Sprite
 		
 		if (x != target.x || y != target.y)
 		{
-			Actuate.timer(0.1).onComplete(walk);
+			Actuate.timer(0.1).onComplete(think);
+			walk();
 			return;
 		}
 		
 		if (frame == FRAME_STANDING)
 		{
-			Actuate.timer(1.0 + Math.random() * 2.0).onComplete(wander);
+			Actuate.timer(1.0 + Math.random() * 2.0).onComplete(think);
+			wander();
 			return;
 		}
 		
 		if (frame == FRAME_FALLEN)
 		{
-			Actuate.timer(1.0).onComplete(stand);
+			Actuate.timer(1.0).onComplete(think);
+			stand();
 			return;
 		}
 		
@@ -194,8 +188,7 @@ class TestSubject extends Sprite
 			return;
 		}
 		
-		// other wise...
-		stand();
+		Actuate.timer(5.0).onComplete(think);
 			
 		thinking.dispatch(this);
 	}
