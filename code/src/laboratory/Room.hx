@@ -56,7 +56,7 @@ class Room extends Sprite
 	
 	public function assignRandomWithinBounds(point:Point):Void
 	{
-		var padding:Int = 10;
+		var padding:Int = 20;
 		point.x = boundary.x + padding + ((boundary.width - padding * 2) * Math.random());
 		point.y = boundary.y + padding + ((boundary.height - padding * 2) * Math.random());
 	}

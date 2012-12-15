@@ -71,6 +71,9 @@ class LaboratoryScreen extends Screen
 		recruit.x = recruit.target.x;
 		recruit.y = recruit.target.y;
 		
+		recruit.fallen.add(onRecruitFallen);
+		
+		recruit.draw();
 		recruit.fadeIn();
 	}
 	
@@ -83,12 +86,29 @@ class LaboratoryScreen extends Screen
 	
 	function moveRecruitToRecycling(recruit:TestSubject):Void
 	{
-		recruit.room = rooms.recyclingRoom;
-		rooms.recyclingRoom.assignRandomWithinBounds(recruit.target);
-		recruit.x = recruit.target.x;
-		recruit.y = recruit.target.y;
-		
+		moveRecruitToRoom(recruit, rooms.recyclingRoom);		
 		Actuate.timer(35).onComplete(recruit.fadeOut);
 	}
 	
+	function moveRecruitToRoom(recruit:TestSubject, room:Room):Void
+	{
+		recruit.room = room;
+		room.assignRandomWithinBounds(recruit.target);
+		recruit.x = recruit.target.x;
+		recruit.y = recruit.target.y;
+	}
+	
+	function onRecruitFallen(recruit:TestSubject):Void
+	{
+		for (room in rooms.rooms)
+		{
+			if (room.boundary.contains(recruit.x, recruit.y))
+			{
+				moveRecruitToRoom(recruit, room);
+				return;
+			}
+		}
+		
+		moveRecruitToRoom(recruit, rooms.waitingRoom);
+	}
 }
