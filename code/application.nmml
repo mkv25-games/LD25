@@ -3,22 +3,22 @@
 	<!-- NMML reference: https://gist.github.com/1763850 -->
 	
 	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
-	<meta title="LD25 Test Subject Gamma" package="net.mkv25.ld25.LD25TestSubjectGamma" version="1.0.0" company="John Beech" />
+	<meta title="LD25 Test Subject Gamma" package="net.mkv25.ld25" version="1.0.0" company="John Beech" />
 	
 	<!-- output -->
 	<app main="net.mkv25.ld25.Main" file="LD25TestSubjectGamma" path="bin" />
 	
 	<window background="#000000" fps="60" />
-	<window width="800" height="480" unless="mobile" />
+	<window width="800" height="500" unless="mobile" />
 	<window orientation="landscape" vsync="true" antialiasing="0" if="cpp" />
 	
 	<!-- classpath, haxe libs -->
 	<source path="src" />
 	<haxelib name="nme" />
+	<haxelib name="actuate" />
 	
 	<!-- assets -->
-	<icon path="assets/nme.svg" />
-	<assets path="assets/img" rename="img" />
+	<assets path="assets" />
 	
 	<!-- DLLs -->
 	<ndll name="std" />

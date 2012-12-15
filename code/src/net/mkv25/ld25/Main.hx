@@ -1,5 +1,6 @@
 package net.mkv25.ld25;
 
+import game.Game;
 import nme.display.Sprite;
 import nme.events.Event;
 import nme.Lib;
@@ -25,8 +26,8 @@ class Main extends Sprite
 	private function init(e) 
 	{
 		// entry point
-		
-		// new to Haxe NME? please read *carefully* the readme.txt file!
+		var game:Game = new Game();
+		addChild(game);
 	}
 	
 	static public function main() 
