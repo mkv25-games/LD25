@@ -4,6 +4,7 @@ import com.eclecticdesignstudio.motion.Actuate;
 import core.interfaces.IDrawable;
 import core.Screen;
 import core.Signal;
+import game.Global;
 import nme.Assets;
 import nme.display.Bitmap;
 import nme.display.Sprite;
@@ -11,6 +12,10 @@ import nme.Vector;
 
 class LaboratoryScreen extends Screen
 {
+	@global var scores:Scores;
+	@global var rooms:Rooms;	
+	@global var humanResources:HumanResources;
+	
 	public var layerPeople:Sprite;
 	public var layerDecals:Sprite;
 	
@@ -18,13 +23,16 @@ class LaboratoryScreen extends Screen
 	
 	public var resortRequired:Bool;
 	public var drawables:Vector<IDrawable>;
-	public var rooms:Rooms;	
-	public var humanResources:HumanResources;
+	
 	
 	var selectedRecruit:TestSubject;
 	
 	public function new() 
 	{
+		scores = Global.scores;
+		rooms = Global.rooms;
+		humanResources = Global.humanResources;
+		
 		super();
 		
 		layerPeople = new Sprite();
@@ -33,12 +41,10 @@ class LaboratoryScreen extends Screen
 		ready = new Signal();
 		
 		screen.bitmapData = Assets.getBitmapData("assets/laboratory.png");
-		resortRequired = false;
 		drawables = new Vector<IDrawable>();
-		rooms = new Rooms();
-		humanResources = new HumanResources();
 		
 		addChild(screen);
+		addChild(scores);
 		addChild(rooms);
 		addChild(layerPeople);
 		addChild(layerDecals);
@@ -47,6 +53,7 @@ class LaboratoryScreen extends Screen
 		humanResources.recruitDied.add(onRecruitDied);
 		
 		visible = false;
+		resortRequired = true;
 		
 		sortDrawables();
 	}
@@ -54,10 +61,15 @@ class LaboratoryScreen extends Screen
 	public function show(?args:Dynamic):Void
 	{
 		visible = true;
-		screen.alpha = 0.0;
-		Actuate.tween(screen, 2.0, { alpha: 1.0 } ).onComplete(onShowComplete).delay(1.0);
+		this.alpha = 0.0;
+		Actuate.tween(this, 2.0, { alpha: 1.0 } ).onComplete(onShowComplete).delay(1.0);
 		
 		requestFocus.dispatch(this);
+		
+		scores.employeeScore.setValue(0);
+		scores.deathScore.setValue(100);
+		scores.researchScore.setValue(1000);
+		scores.moneyScore.setValue(500000000);
 	}
 	
 	function onShowComplete():Void
@@ -66,8 +78,14 @@ class LaboratoryScreen extends Screen
 		
 		rooms.flashAllRooms();
 		
+		// set starting values		
+		scores.employeeScore.changeValue(humanResources.testSubjects.length);
+		scores.deathScore.changeValue(0);
+		scores.researchScore.changeValue(0);
+		scores.moneyScore.changeValue(1000);
+		
 		// recruit the initial test subjects
-		for (i in 0...8)
+		for (i in 0...5)
 		{
 			Actuate.timer(i * 0.15).onComplete(humanResources.recruitTestSubject);
 		}
@@ -76,7 +94,7 @@ class LaboratoryScreen extends Screen
 	function onRecruitArrived(hr:HumanResources):Void
 	{
 		var recruit = hr.newestRecruit();
-		recruit.room = rooms.waitingRoom;
+		moveRecruitToRoom(recruit, rooms.waitingRoom);
 		layerPeople.addChild(recruit);
 		
 		rooms.waitingRoom.assignRandomWithinBounds(recruit.target);
@@ -91,6 +109,9 @@ class LaboratoryScreen extends Screen
 		
 		recruit.draw();
 		recruit.fadeIn();
+		
+		scores.employeeScore.changeValue(humanResources.testSubjects.length);
+		scores.moneyScore.subtract(100);
 	}
 	
 	function onRecruitDied(hr:HumanResources):Void
@@ -111,26 +132,27 @@ class LaboratoryScreen extends Screen
 		if(i >= 0)
 		drawables.splice(i, 1);
 		
+		if (recruit.room != null)
+		{
+			recruit.room.employeeRemoved(recruit);
+			recruit.room = null;
+		}
+		
 		Actuate.timer(1.0).onComplete(moveRecruitToRecycling, [recruit]);
-	}
-	
-	function moveRecruitToRecycling(recruit:TestSubject):Void
-	{
-		moveRecruitToRoom(recruit, rooms.recyclingRoom);		
-		Actuate.timer(35).onComplete(recruit.fadeOut);
-	}
-	
-	function moveRecruitToRoom(recruit:TestSubject, room:Room):Void
-	{
-		recruit.room = room;
-		room.assignRandomWithinBounds(recruit.target);
-		recruit.x = recruit.target.x;
-		recruit.y = recruit.target.y;
+		
+		scores.employeeScore.changeValue(humanResources.testSubjects.length);
+		scores.deathScore.changeValue(humanResources.deadRecruits.length);
 	}
 	
 	function onRecruitPickedUp(recruit:TestSubject):Void
 	{
 		addChild(recruit);
+		
+		if (recruit.room != null)
+		{
+			recruit.room.employeeRemoved(recruit);
+			recruit.room = null;
+		}
 	}
 	
 	function onRecruitFallen(recruit:TestSubject):Void
@@ -144,15 +166,31 @@ class LaboratoryScreen extends Screen
 		{
 			if (room.boundary.contains(recruit.x, recruit.y))
 			{
-				recruit.room = room;
 				recruit.target.x = recruit.x;
 				recruit.target.y = recruit.y;
-				// moveRecruitToRoom(recruit, room);
+				moveRecruitToRoom(recruit, room);
 				return;
 			}
 		}
 		
 		moveRecruitToRoom(recruit, rooms.waitingRoom);
+	}
+	
+	function moveRecruitToRecycling(recruit:TestSubject):Void
+	{
+		moveRecruitToRoom(recruit, rooms.recyclingRoom);		
+		Actuate.timer(35).onComplete(recruit.fadeOut);
+	}
+	
+	function moveRecruitToRoom(recruit:TestSubject, room:Room):Void
+	{
+		if (recruit.room != null)
+		{
+			recruit.room.employeeRemoved(recruit);
+			recruit.room = null;
+		}
+		recruit.room = room;
+		room.employeeAdded(recruit);
 	}
 	
 	function onRecruitDrawn(recruit:TestSubject):Void

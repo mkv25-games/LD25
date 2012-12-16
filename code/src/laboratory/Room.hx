@@ -2,28 +2,34 @@ package laboratory;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Quad;
 import core.Signal;
+import laboratory.interfaces.IRoomProcess;
 import nme.display.Sprite;
 import nme.events.MouseEvent;
 import nme.geom.Point;
 import nme.geom.Rectangle;
+import nme.Vector;
 
 class Room extends Sprite 
 {
 	public var boundary:Rectangle;
+	public var roomProcess:IRoomProcess;
 	public var highlightColour:Int;
 	public var offset:Int;
+	public var employees:List<TestSubject>;
 	
 	public var highlighted:Signal;
 	
-	public function new(name:String, x:Float, y:Float, width:Float, height:Float) 
+	public function new(name:String, x:Float, y:Float, width:Float, height:Float, type:Class<Dynamic>) 
 	{
 		super();
 		
 		this.name = name;
 		boundary = new Rectangle(x, y, width, height);
+		roomProcess = Type.createInstance(type, []);
 		
 		highlightColour = 0xFFFFFF;
 		offset = 0;
+		employees = new List<TestSubject>();
 		
 		highlighted = new Signal();
 		
@@ -31,6 +37,7 @@ class Room extends Sprite
 		
 		addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+		addEventListener(MouseEvent.CLICK, onMouseClick);
 		
 		hide();
 		mouseEnabled = false;
@@ -48,7 +55,8 @@ class Room extends Sprite
 	
 	public function highlight(?args:Dynamic):Void
 	{
-		alpha = 0.5;
+		alpha = 0.1;
+		highlighted.dispatch(this);
 	}
 	
 	public function hide(?args:Dynamic):Void
@@ -96,7 +104,6 @@ class Room extends Sprite
 	function onMouseOver(e:MouseEvent):Void
 	{
 		highlight();
-		highlighted.dispatch(this);
 	}
 	
 	function onMouseOut(e:MouseEvent):Void
@@ -104,4 +111,26 @@ class Room extends Sprite
 		hide();
 	}
 	
+	function onMouseClick(e:MouseEvent):Void
+	{
+		highlight();
+		
+		roomProcess.requestPurchase();
+	}
+	
+	public function employeeAdded(employee:TestSubject):Void
+	{
+		employees.push(employee);
+	}
+	
+	public function employeeRemoved(employee:TestSubject):Void
+	{
+		employees.remove(employee);
+	}
+	
+	public function process(?args:Dynamic):Void
+	{
+		if (employees.length > 0)
+			roomProcess.process(employees);
+	}
 }

@@ -12,6 +12,7 @@ import nme.Lib;
 
 class Main extends Sprite 
 {
+	public var game:Game;
 	
 	public function new() 
 	{
@@ -26,8 +27,16 @@ class Main extends Sprite
 	private function init(e) 
 	{
 		// entry point
-		var game:Game = new Game();
+		game = new Game();
 		addChild(game);
+		
+		stage.addEventListener(Event.RESIZE, resize);
+	}
+	
+	private function resize(e:Event):Void
+	{
+		game.x = Math.floor(stage.stageWidth / 2 - game.width / 2);
+		game.y = Math.floor(stage.stageHeight / 2 - game.height / 2);
 	}
 	
 	static public function main() 

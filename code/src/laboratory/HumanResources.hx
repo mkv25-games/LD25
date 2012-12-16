@@ -42,6 +42,11 @@ class HumanResources
 		recruitArrived.dispatch(this);
 	}
 	
+	public function testSubjectPrice():Float
+	{
+		return 100;
+	}
+	
 	public function newestRecruit():TestSubject
 	{
 		if(testSubjects.length > 0)

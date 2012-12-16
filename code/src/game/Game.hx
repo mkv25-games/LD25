@@ -2,7 +2,10 @@ package game;
 import core.interfaces.IScreen;
 import core.Screen;
 import core.Signal;
+import laboratory.HumanResources;
 import laboratory.LaboratoryScreen;
+import laboratory.Rooms;
+import laboratory.Scores;
 import nme.display.Sprite;
 import title.TitleScreen;
 
@@ -17,9 +20,16 @@ class Game extends Screen
 	{
 		super();
 		
+		// define static models
+		Global.scores = new Scores();
+		Global.humanResources = new HumanResources();
+		Global.rooms = new Rooms();
+		
+		// define modules
 		title = addModule(TitleScreen);
 		laboratory = addModule(LaboratoryScreen);
 		
+		// wire up module commands
 		addCommand(title.complete, laboratory.show);
 		addCommand(laboratory.requestFocus, giveFocus);
 		addCommand(title.requestFocus, giveFocus);

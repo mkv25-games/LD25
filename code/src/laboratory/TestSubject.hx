@@ -40,6 +40,7 @@ class TestSubject extends Sprite, implements IDrawable
 	public var room:Room;
 	public var walkSpeed:Float;
 	public var isSelected:Bool;
+	public var isStunned:Bool;
 	
 	public var standing:Signal;
 	public var walking:Signal;
@@ -73,6 +74,8 @@ class TestSubject extends Sprite, implements IDrawable
 		target = new Point();
 		room = null;
 		walkSpeed = Math.random() * 500;
+		isSelected = false;
+		isStunned = false;
 		
 		standing = new Signal();
 		walking = new Signal();
@@ -215,6 +218,8 @@ class TestSubject extends Sprite, implements IDrawable
 		if (frame == FRAME_DEAD)
 			return;
 			
+		isStunned = true;
+		
 		frame = FRAME_FALLEN;
 		
 		stopDrag();
@@ -222,6 +227,13 @@ class TestSubject extends Sprite, implements IDrawable
 		
 		draw();
 		drawHealthBar();
+		
+		Actuate.timer(0.6).onComplete(unstun);
+	}
+	
+	public function unstun():Void
+	{
+		isStunned = false;
 	}
 	
 	public function kill():Void
@@ -235,6 +247,12 @@ class TestSubject extends Sprite, implements IDrawable
 	
 	public function think():Void
 	{
+		if (isStunned)
+		{
+			Actuate.timer(0.5).onComplete(think);
+			return;
+		}
+		
 		var health = calculateHealth();
 		if (health <= 0)
 		{
@@ -274,7 +292,7 @@ class TestSubject extends Sprite, implements IDrawable
 			return;
 		}
 		
-		Actuate.timer(5.0).onComplete(think);
+		Actuate.timer(2.0).onComplete(think);
 			
 		thinking.dispatch(this);
 	}
@@ -292,7 +310,6 @@ class TestSubject extends Sprite, implements IDrawable
 	
 	public function fadeOut():Void
 	{
-		alpha = 0.0;
 		Actuate.tween(this, 0.8, { alpha: 0.0 } ).autoVisible().onComplete(onFadeOutComplete);
 	}
 	
@@ -339,8 +356,8 @@ class TestSubject extends Sprite, implements IDrawable
 	
 	function calculateHealth():Float
 	{
-		var maxTotal = calculateMaxTotal();
-		var sumTotal:Float = sanity.value + physicalAbility.value + mentalAbility.value + geneticQuality.value;
+		var maxTotal = Math.max(1, calculateMaxTotal());
+		var sumTotal:Float = Math.max(0, sanity.value + physicalAbility.value + mentalAbility.value + geneticQuality.value);
 		return sumTotal / maxTotal;
 	}
 	
