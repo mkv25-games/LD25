@@ -156,6 +156,10 @@ class TestSubject extends Sprite, implements IDrawable
 		text.height = 20;
 		text.x = - text.width / 2;
 		text.y = -bitmap.height - text.height - r.height;
+		
+		g.beginFill(0x000000, 0.5);
+		g.drawRect(text.x, text.y, text.width, text.height);
+		g.endFill();
 	}
 	
 	public function wander():Void
@@ -320,13 +324,6 @@ class TestSubject extends Sprite, implements IDrawable
 			parent.removeChild(this);
 	}
 	
-	public static function getSprites():SpriteSheet
-	{
-		if (TestSubject.sprites == null)
-			return TestSubject.sprites = new SpriteSheet("assets/test_subject.png", 100, 100, 8, 8);
-		return TestSubject.sprites;
-	}
-	
 	function onMouseDown(e:MouseEvent):Void
 	{
 		if(frame != FRAME_DEAD)
@@ -373,6 +370,13 @@ class TestSubject extends Sprite, implements IDrawable
 	{
 		isSelected = false;
 		healthBar.visible = isSelected;
+	}
+	
+	public static function getSprites():SpriteSheet
+	{
+		if (TestSubject.sprites == null)
+			return TestSubject.sprites = new SpriteSheet("assets/test_subject.png", 100, 100, 8, 8);
+		return TestSubject.sprites;
 	}
 	
 }

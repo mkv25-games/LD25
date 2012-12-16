@@ -6,7 +6,7 @@ import laboratory.Room;
 import laboratory.Scores;
 import laboratory.TestSubject;
 
-class RecyclingRoomProcess extends StandardProcess
+class GymnasiumProcess extends StandardProcess
 {	
 	public var level:Int = 1;
 	
@@ -17,36 +17,25 @@ class RecyclingRoomProcess extends StandardProcess
 	
 	override public function process(employees:List<TestSubject>):Void
 	{		
-		var profit:Float = 0;
 		var research:Float = 0;
 		var bonus:Float = levelBonus();
 		for (employee in employees)
 		{
-			if (employee.physicalAbility.value > 0)
+			if (employee.physicalAbility.value > employee.physicalAbility.min)
 			{
-				employee.physicalAbility.subtract(10);
-				profit += bonus;
-				research += bonus;
+				employee.physicalAbility.subtract(5);
 			}
 			
-			if (employee.mentalAbility.value > 0)
+			if (employee.mentalAbility.value > employee.mentalAbility.min)
 			{
-				employee.mentalAbility.subtract(10);
-				profit += bonus;
+				employee.mentalAbility.subtract(5);
 			}
 			
-			if (employee.geneticQuality.value > 0)
-			{
-				employee.geneticQuality.subtract(10);
-				profit += bonus;
-			}
+			research += bonus;
 			
-			employee.sanity.subtract(100);
+			employee.sanity.subtract(1);
 			employee.drawHealthBar();
 		}
-		
-		if(profit > 0)
-			scores.moneyScore.add(profit);
 			
 		if (research > 0)
 			scores.researchScore.add(research);
@@ -94,7 +83,7 @@ class RecyclingRoomProcess extends StandardProcess
 	
 	override public function roomFrame():Int
 	{
-		return RoomFrames.NO_FRAME;
+		return RoomFrames.GYMNASIUM;
 	}
 	
 }

@@ -41,7 +41,7 @@ class StandardProcess implements IRoomProcess
 		var cost:Float = purchaseCost();
 		if (scores.moneyScore.value < cost)
 		{
-			return "Requires $" + cost; 
+			return "Upgrade Requires $" + cost; 
 		}
 		else if (cost > 0)
 		{
@@ -56,5 +56,10 @@ class StandardProcess implements IRoomProcess
 	public function purchaseCost():Float
 	{
 		return 0;
+	}
+	
+	public function roomFrame():Int
+	{
+		return RoomFrames.EMPTY1;
 	}
 }

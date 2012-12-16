@@ -49,4 +49,9 @@ class RecruitmentProcess extends StandardProcess
 		return 0;
 	}
 	
+	override public function roomFrame():Int 
+	{
+		return RoomFrames.NO_FRAME;
+	}
+	
 }

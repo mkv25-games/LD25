@@ -2,7 +2,9 @@ package laboratory;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Quad;
 import core.Signal;
+import core.SpriteSheet;
 import laboratory.interfaces.IRoomProcess;
+import nme.display.Bitmap;
 import nme.display.Sprite;
 import nme.events.MouseEvent;
 import nme.geom.Point;
@@ -11,8 +13,13 @@ import nme.Vector;
 
 class Room extends Sprite 
 {
+	public static var sprites(getSprites, null):SpriteSheet;
+	
 	public var boundary:Rectangle;
 	public var roomProcess:IRoomProcess;
+	
+	public var highlightArea:Sprite;
+	public var bitmap:Bitmap;
 	public var highlightColour:Int;
 	public var offset:Int;
 	public var employees:List<TestSubject>;
@@ -22,17 +29,21 @@ class Room extends Sprite
 	public function new(name:String, x:Float, y:Float, width:Float, height:Float, type:Class<Dynamic>) 
 	{
 		super();
-		
+				
 		this.name = name;
 		boundary = new Rectangle(x, y, width, height);
 		roomProcess = Type.createInstance(type, []);
 		
+		highlightArea = new Sprite();
+		bitmap = new Bitmap();
 		highlightColour = 0xFFFFFF;
 		offset = 0;
 		employees = new List<TestSubject>();
 		
 		highlighted = new Signal();
 		
+		addChild(bitmap);
+		addChild(highlightArea);
 		draw();
 		
 		addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
@@ -45,23 +56,34 @@ class Room extends Sprite
 	
 	function draw():Void
 	{
-		var g = this.graphics;
+		this.x = boundary.x;
+		this.y = boundary.y;
+		
+		var g = highlightArea.graphics;
 		g.clear();
 		
 		g.beginFill(highlightColour);
-		g.drawRect(boundary.x, boundary.y, boundary.width, boundary.height);
+		g.drawRect(0, -30, boundary.width, boundary.height + 30);
 		g.endFill();
+		
+		var frame = roomProcess.roomFrame();
+		if (frame > -1)
+		{
+			bitmap.bitmapData = sprites.getXY(0, frame);
+			bitmap.x = Math.floor(boundary.width / 2 - bitmap.width / 2);
+			bitmap.y = boundary.height - bitmap.height;
+		}
 	}
 	
 	public function highlight(?args:Dynamic):Void
 	{
-		alpha = 0.1;
+		highlightArea.alpha = 0.1;
 		highlighted.dispatch(this);
 	}
 	
 	public function hide(?args:Dynamic):Void
 	{
-		alpha = 0.0;
+		highlightArea.alpha = 0.0;
 	}
 	
 	public function flash(?args:Dynamic):Void
@@ -69,13 +91,13 @@ class Room extends Sprite
 		draw();
 		
 		mouseEnabled = false;
-		alpha = 0.0;
+		highlightArea.alpha = 0.0;
 		Actuate.timer(offset * 0.1).onComplete(doFlash);
 	}
 	
 	function doFlash():Void
 	{
-		Actuate.tween(this, 0.1, { alpha: 0.9 } ).reflect().repeat(7).ease(Quad.easeIn).autoVisible(false).onComplete(onFlashComplete);
+		Actuate.tween(highlightArea, 0.1, { alpha: 0.9 } ).reflect().repeat(7).ease(Quad.easeIn).autoVisible(false).onComplete(onFlashComplete);
 	}
 	
 	function onFlashComplete():Void
@@ -132,5 +154,12 @@ class Room extends Sprite
 	{
 		if (employees.length > 0)
 			roomProcess.process(employees);
+	}
+	
+	public static function getSprites():SpriteSheet
+	{
+		if (Room.sprites == null)
+			return Room.sprites = new SpriteSheet("assets/laboratory_rooms.png", 240, 120, 2, 4);
+		return Room.sprites;
 	}
 }

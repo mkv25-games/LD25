@@ -2,7 +2,12 @@ package laboratory;
 import com.eclecticdesignstudio.motion.Actuate;
 import core.Signal;
 import core.Text;
+import laboratory.rooms.ElectricalRoomProcess;
+import laboratory.rooms.GymnasiumProcess;
+import laboratory.rooms.HeaterRoomProcess;
+import laboratory.rooms.IceBoxProcess;
 import laboratory.rooms.MedicalRoomProcess;
+import laboratory.rooms.PoisonRoomProcess;
 import laboratory.rooms.RecruitmentProcess;
 import laboratory.rooms.RecyclingRoomProcess;
 import laboratory.rooms.StandardProcess;
@@ -53,13 +58,13 @@ class Rooms extends Sprite
 		recyclingRoom = createRoom("Recycling", 270, 230, 260, 90, RecyclingRoomProcess);
 		recyclingRoom.highlightColour = 0xFF0000;
 		
-		laboratoryA1 = createRoom("Laboratory A1", 10, 100, 200, 90, StandardProcess);
-		laboratoryA2 = createRoom("Laboratory A2", 10, 230, 200, 90, StandardProcess);
-		laboratoryA3 = createRoom("Laboratory A3", 10, 360, 200, 90, StandardProcess);
+		laboratoryA1 = createRoom("Electrical Incentification", 10, 100, 200, 90, ElectricalRoomProcess);
+		laboratoryA2 = createRoom("Gymnasium", 10, 230, 200, 90, GymnasiumProcess);
+		laboratoryA3 = createRoom("Viral Mechanisms", 10, 360, 200, 90, PoisonRoomProcess);
 		
-		laboratoryB1 = createRoom("Medical", 590, 100, 200, 90, MedicalRoomProcess);
-		laboratoryB2 = createRoom("Laboratory B2", 590, 230, 200, 90, StandardProcess);
-		laboratoryB3 = createRoom("Laboratory B3", 590, 360, 200, 90, StandardProcess);
+		laboratoryB1 = createRoom("Medical Rehabilitation", 590, 100, 200, 90, MedicalRoomProcess);
+		laboratoryB2 = createRoom("The Ice Box", 590, 230, 200, 90, IceBoxProcess);
+		laboratoryB3 = createRoom("Future Cooling Systems", 590, 360, 200, 90, HeaterRoomProcess);
 		
 		roomLabel = Text.makeTextField("assets/trebuchet-bold.ttf", 24, 0x443333, TextFormatAlign.CENTER);
 		roomLabel.width = 300;

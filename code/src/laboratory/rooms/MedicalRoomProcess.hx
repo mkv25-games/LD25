@@ -52,4 +52,9 @@ class MedicalRoomProcess extends StandardProcess
 		processed.dispatch(this);
 	}
 	
+	override public function roomFrame():Int
+	{
+		return RoomFrames.MEDICAL;
+	}
+	
 }

@@ -178,7 +178,11 @@ class LaboratoryScreen extends Screen
 	
 	function moveRecruitToRecycling(recruit:TestSubject):Void
 	{
-		moveRecruitToRoom(recruit, rooms.recyclingRoom);		
+		moveRecruitToRoom(recruit, rooms.recyclingRoom);
+		rooms.recyclingRoom.assignRandomWithinBounds(recruit.target); 
+		recruit.x = recruit.target.x;
+		recruit.y = recruit.target.y;
+		
 		Actuate.timer(35).onComplete(recruit.fadeOut);
 	}
 	

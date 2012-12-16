@@ -11,4 +11,5 @@ interface IRoomProcess
 	function requestPurchase(?args:Dynamic):Void;
 	function purchaseName():String;
 	function purchaseCost():Float;
+	function roomFrame():Int;
 }
