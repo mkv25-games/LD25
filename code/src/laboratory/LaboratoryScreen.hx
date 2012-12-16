@@ -21,6 +21,8 @@ class LaboratoryScreen extends Screen
 	public var rooms:Rooms;	
 	public var humanResources:HumanResources;
 	
+	var selectedRecruit:TestSubject;
+	
 	public function new() 
 	{
 		super();
@@ -81,8 +83,10 @@ class LaboratoryScreen extends Screen
 		recruit.x = recruit.target.x;
 		recruit.y = recruit.target.y;
 		
+		recruit.pickedUp.add(onRecruitPickedUp);
 		recruit.fallen.add(onRecruitFallen);
 		recruit.drawn.add(onRecruitDrawn);
+		recruit.selected.add(onRecruitSelected);
 		drawables.push(recruit);
 		
 		recruit.draw();
@@ -95,7 +99,17 @@ class LaboratoryScreen extends Screen
 		
 		recruit.fallen.remove(onRecruitFallen);
 		recruit.drawn.remove(onRecruitDrawn);
-		drawables.splice(drawables.indexOf(recruit), 1);
+		recruit.selected.remove(onRecruitSelected);
+		
+		var i = -1;
+		for (k in drawables)
+		{
+			i++;
+			if (k == recruit)
+				break;
+		}
+		if(i >= 0)
+		drawables.splice(i, 1);
 		
 		Actuate.timer(1.0).onComplete(moveRecruitToRecycling, [recruit]);
 	}
@@ -114,8 +128,18 @@ class LaboratoryScreen extends Screen
 		recruit.y = recruit.target.y;
 	}
 	
+	function onRecruitPickedUp(recruit:TestSubject):Void
+	{
+		addChild(recruit);
+	}
+	
 	function onRecruitFallen(recruit:TestSubject):Void
 	{
+		layerPeople.addChild(recruit);
+		
+		var fallDamage:Float = 10 + Math.round(Math.random() * 40);
+		recruit.physicalAbility.subtract(fallDamage);
+		
 		for (room in rooms.rooms)
 		{
 			if (room.boundary.contains(recruit.x, recruit.y))
@@ -134,6 +158,14 @@ class LaboratoryScreen extends Screen
 	function onRecruitDrawn(recruit:TestSubject):Void
 	{
 		resortRequired = true;
+	}
+	
+	function onRecruitSelected(recruit:TestSubject):Void
+	{
+		if (selectedRecruit != null && selectedRecruit != recruit)
+			selectedRecruit.deselect();
+		
+		selectedRecruit = recruit;
 	}
 	
 	function sortDrawables():Void

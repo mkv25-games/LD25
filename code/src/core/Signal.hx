@@ -17,8 +17,15 @@ class Signal
 	
 	public function remove (listener: Dynamic -> Void):Void
 	{
-		var i = listeners.indexOf(listener);
-		listeners.splice(i, 1);
+		var i = -1;
+		for (k in listeners)
+		{
+			i++;
+			if (k == listener)
+				break;
+		}
+		if(i >= 0)
+			listeners.splice(i, 1);
 	}
 	
 	public function removeAll():Void

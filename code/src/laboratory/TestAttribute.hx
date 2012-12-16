@@ -29,4 +29,14 @@ class TestAttribute
 		return value;
 	}
 	
+	public function add(amount:Float):Void
+	{
+		constrain(value + amount);
+	}
+	
+	public function subtract(amount:Float):Void
+	{
+		constrain(value - amount);
+	}
+	
 }

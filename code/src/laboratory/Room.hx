@@ -19,15 +19,23 @@ class Room extends Sprite
 		boundary = new Rectangle(x, y, width, height);
 		highlightColour = 0xFFFFFF;
 		
-		var g = this.graphics;
-		g.beginFill(highlightColour);
-		g.drawRect(boundary.x, boundary.y, boundary.width, boundary.height);
-		g.endFill();
+		draw();
 		
 		addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
 		
 		hide();
+		mouseEnabled = false;
+	}
+	
+	function draw():Void
+	{
+		var g = this.graphics;
+		g.clear();
+		
+		g.beginFill(highlightColour);
+		g.drawRect(boundary.x, boundary.y, boundary.width, boundary.height);
+		g.endFill();
 	}
 	
 	public function highlight(?args:Dynamic):Void
@@ -42,6 +50,8 @@ class Room extends Sprite
 	
 	public function flash(?args:Dynamic):Void
 	{
+		draw();
+		
 		mouseEnabled = false;
 		alpha = 0.0;
 		Actuate.timer(offset * 0.1).onComplete(doFlash);

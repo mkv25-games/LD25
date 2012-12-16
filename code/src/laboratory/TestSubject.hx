@@ -4,12 +4,14 @@ import com.eclecticdesignstudio.motion.easing.Bounce;
 import core.interfaces.IDrawable;
 import core.Signal;
 import core.SpriteSheet;
+import nme.Assets;
 import nme.display.Bitmap;
 import nme.display.DisplayObject;
 import nme.display.Sprite;
 import nme.events.MouseEvent;
 import nme.geom.Point;
 import nme.geom.Rectangle;
+import nme.text.TextField;
 import nme.Vector;
 import nme.Vector;
 
@@ -29,11 +31,13 @@ class TestSubject extends Sprite, implements IDrawable
 	
 	public var bitmap:Bitmap;
 	public var healthBar:Sprite;
+	public var healthText:TextField;
 	public var frame:Int;
 	public var columnOffset:Int = 0;
 	public var target:Point;
 	public var room:Room;
 	public var walkSpeed:Float;
+	public var isSelected:Bool;
 	
 	public var standing:Signal;
 	public var walking:Signal;
@@ -41,7 +45,9 @@ class TestSubject extends Sprite, implements IDrawable
 	public var fallen:Signal;
 	public var dead:Signal;
 	public var thinking:Signal;
+	
 	public var drawn:Signal;
+	public var selected:Signal;
 	
 	public var physicalAbility:TestAttribute;
 	public var mentalAbility:TestAttribute;
@@ -59,6 +65,7 @@ class TestSubject extends Sprite, implements IDrawable
 		
 		bitmap = new Bitmap();
 		healthBar = new Sprite();
+		healthText = new TextField();
 		frame = FRAME_STANDING;
 		columnOffset = type;
 		target = new Point();
@@ -71,7 +78,9 @@ class TestSubject extends Sprite, implements IDrawable
 		fallen = new Signal();
 		dead = new Signal();
 		thinking = new Signal();
+		
 		drawn = new Signal();
+		selected = new Signal();
 		
 		physicalAbility = new TestAttribute("Physical Ability", 100, -100);
 		mentalAbility = new TestAttribute("Mental Ability", 100, -100);
@@ -80,6 +89,7 @@ class TestSubject extends Sprite, implements IDrawable
 		
 		addChild(bitmap);
 		addChild(healthBar);
+		healthBar.addChild(healthText);
 		
 		addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 		addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
@@ -93,6 +103,7 @@ class TestSubject extends Sprite, implements IDrawable
 			walkFrames.push(frame);
 		
 		think();
+		mouseEnabled = false;
 	}
 	
 	public function draw():Void
@@ -117,7 +128,7 @@ class TestSubject extends Sprite, implements IDrawable
 		
 		var r = new Rectangle();
 		r.width = 50;
-		r.height = 16;
+		r.height = 10;
 		r.x = - r.width / 2;
 		r.y = - bitmap.height - r.height;
 		
@@ -129,6 +140,24 @@ class TestSubject extends Sprite, implements IDrawable
 		g.beginFill(0x738043);
 		g.drawRect(r.x, r.y, r.width * s, r.height);
 		g.endFill();
+		
+		var format = healthText.defaultTextFormat;
+		var font = Assets.getFont("assets/orator.otf");
+		format.font = font.fontName;
+		format.size = 16;
+		format.color = 0xFFFFFF;
+		
+		var text = healthText;
+		text.defaultTextFormat = format;
+		text.setTextFormat(format);
+		text.embedFonts = true;
+		text.text = name;
+		text.width = r.width;
+		text.height = 20;
+		text.mouseEnabled = false;
+		text.selectable = false;
+		text.x = - text.width / 2;
+		text.y = -bitmap.height - text.height - r.height;
 	}
 	
 	public function wander():Void
@@ -182,6 +211,7 @@ class TestSubject extends Sprite, implements IDrawable
 		
 		startDrag();
 		pickedUp.dispatch(this);
+		select();
 		draw();
 	}
 	
@@ -196,6 +226,7 @@ class TestSubject extends Sprite, implements IDrawable
 		fallen.dispatch(this);
 		
 		draw();
+		drawHealthBar();
 	}
 	
 	public function kill():Void
@@ -209,6 +240,13 @@ class TestSubject extends Sprite, implements IDrawable
 	
 	public function think():Void
 	{
+		var health = calculateHealth();
+		if (health <= 0)
+		{
+			kill();
+			return;
+		}
+		
 		if (frame == FRAME_PICKED_UP)
 		{
 			Actuate.timer(0.5).onComplete(think);
@@ -249,7 +287,12 @@ class TestSubject extends Sprite, implements IDrawable
 	public function fadeIn():Void
 	{
 		alpha = 0.0;
-		Actuate.tween(this, 0.8, { alpha: 1.0 } );
+		Actuate.tween(this, 0.8, { alpha: 1.0 } ).onComplete(onFadeInComplete);
+	}
+	
+	function onFadeInComplete():Void
+	{
+		mouseEnabled = true;
 	}
 	
 	public function fadeOut():Void
@@ -283,15 +326,15 @@ class TestSubject extends Sprite, implements IDrawable
 		drop();
 	}
 	
-	function onMouseOut(e:MouseEvent):Void
-	{
-		healthBar.visible = false;
-	}
-	
 	function onMouseOver(e:MouseEvent):Void
 	{
 		healthBar.visible = true;
 		drawHealthBar();
+	}
+	
+	function onMouseOut(e:MouseEvent):Void
+	{
+		healthBar.visible = isSelected || false;
 	}
 	
 	function calculateMaxTotal():Float
@@ -304,6 +347,20 @@ class TestSubject extends Sprite, implements IDrawable
 		var maxTotal = calculateMaxTotal();
 		var sumTotal:Float = sanity.value + physicalAbility.value + mentalAbility.value + geneticQuality.value;
 		return sumTotal / maxTotal;
+	}
+	
+	public function select():Void
+	{
+		isSelected = true;
+		healthBar.visible = isSelected;
+		selected.dispatch(this);
+		drawHealthBar();
+	}
+	
+	public function deselect():Void
+	{
+		isSelected = false;
+		healthBar.visible = isSelected;
 	}
 	
 }

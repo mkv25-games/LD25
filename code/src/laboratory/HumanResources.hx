@@ -13,7 +13,7 @@ class HumanResources
 	
 	public var XNAME:String = "1234567890";
 	public var YNAME:String = "ABCJKIXYZ";
-	public var ZNAME:String = "DEFPQR+-$";
+	public var ZNAME:String = "DEFPQR+/$";
 	
 	public function new() 
 	{
@@ -35,7 +35,7 @@ class HumanResources
 		var indexY:Int = Math.floor(index / 10);
 		var indexZ:Int = Math.floor(index);
 		
-		recruit.name = "TS" + XNAME.charAt(indexX % XNAME.length) + YNAME.charAt(indexY % YNAME.length) + ZNAME.charAt(indexZ % ZNAME.length);
+		recruit.name = "TS-" + XNAME.charAt(indexX % XNAME.length) + YNAME.charAt(indexY % YNAME.length) + ZNAME.charAt(indexZ % ZNAME.length)+ XNAME.charAt((indexX + 1) % XNAME.length) ;
 		
 		recruit.dead.add(onRecruitDead);
 		
@@ -60,8 +60,15 @@ class HumanResources
 	
 	function onRecruitDead(recruit:TestSubject):Void
 	{
-		var index = testSubjects.indexOf(recruit);
-		testSubjects.splice(index, 1);
+		var i = -1;
+		for (k in testSubjects)
+		{
+			i++;
+			if (k == recruit)
+				break;
+		}
+		if(i >= 0)
+			testSubjects.splice(i, 1);
 		
 		deadRecruits.push(recruit);
 		recruit.dead.remove(onRecruitDead);

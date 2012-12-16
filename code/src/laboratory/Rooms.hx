@@ -35,6 +35,7 @@ class Rooms extends Sprite
 		
 		waitingRoom = createRoom("Waiting Room", 270, 100, 260, 90);
 		recyclingRoom = createRoom("Recycling", 270, 230, 260, 90);
+		recyclingRoom.highlightColour = 0xFF0000;
 		
 		laboratoryA1 = createRoom("Laboratory A1", 10, 100, 200, 90);
 		laboratoryA2 = createRoom("Laboratory A2", 10, 230, 200, 90);
