@@ -4,6 +4,7 @@ import com.eclecticdesignstudio.motion.easing.Bounce;
 import core.interfaces.IDrawable;
 import core.Signal;
 import core.SpriteSheet;
+import core.Text;
 import nme.Assets;
 import nme.display.Bitmap;
 import nme.display.DisplayObject;
@@ -12,6 +13,7 @@ import nme.events.MouseEvent;
 import nme.geom.Point;
 import nme.geom.Rectangle;
 import nme.text.TextField;
+import nme.text.TextFormatAlign;
 import nme.Vector;
 import nme.Vector;
 
@@ -65,7 +67,7 @@ class TestSubject extends Sprite, implements IDrawable
 		
 		bitmap = new Bitmap();
 		healthBar = new Sprite();
-		healthText = new TextField();
+		healthText = Text.makeTextField("assets/trebuchet-bold.ttf", 16, 0xFFFFFF, TextFormatAlign.CENTER);
 		frame = FRAME_STANDING;
 		columnOffset = type;
 		target = new Point();
@@ -144,18 +146,11 @@ class TestSubject extends Sprite, implements IDrawable
 		var format = healthText.defaultTextFormat;
 		var font = Assets.getFont("assets/orator.otf");
 		format.font = font.fontName;
-		format.size = 16;
-		format.color = 0xFFFFFF;
 		
 		var text = healthText;
-		text.defaultTextFormat = format;
-		text.setTextFormat(format);
-		text.embedFonts = true;
 		text.text = name;
 		text.width = r.width + 40;
 		text.height = 20;
-		text.mouseEnabled = false;
-		text.selectable = false;
 		text.x = - text.width / 2;
 		text.y = -bitmap.height - text.height - r.height;
 	}

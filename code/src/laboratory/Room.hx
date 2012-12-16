@@ -1,6 +1,7 @@
 package laboratory;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Quad;
+import core.Signal;
 import nme.display.Sprite;
 import nme.events.MouseEvent;
 import nme.geom.Point;
@@ -10,14 +11,21 @@ class Room extends Sprite
 {
 	public var boundary:Rectangle;
 	public var highlightColour:Int;
-	public var offset:Int = 0;
+	public var offset:Int;
+	
+	public var highlighted:Signal;
 	
 	public function new(name:String, x:Float, y:Float, width:Float, height:Float) 
 	{
 		super();
 		
+		this.name = name;
 		boundary = new Rectangle(x, y, width, height);
+		
 		highlightColour = 0xFFFFFF;
+		offset = 0;
+		
+		highlighted = new Signal();
 		
 		draw();
 		
@@ -88,6 +96,7 @@ class Room extends Sprite
 	function onMouseOver(e:MouseEvent):Void
 	{
 		highlight();
+		highlighted.dispatch(this);
 	}
 	
 	function onMouseOut(e:MouseEvent):Void
