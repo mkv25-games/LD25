@@ -38,6 +38,11 @@ class SpriteSheet
 		return sprites[index];
 	}
 	
+	public function getXYFrame(i:Int, j:Int):Int
+	{
+		return (j * columns) + i;
+	}
+	
 	function readSprites():Void
 	{
 		_sprites = new Vector<BitmapData>();

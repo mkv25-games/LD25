@@ -1,4 +1,5 @@
 package game;
+import com.eclecticdesignstudio.motion.Actuate;
 import core.interfaces.IScreen;
 import core.Screen;
 import core.Signal;
@@ -6,7 +7,10 @@ import laboratory.HumanResources;
 import laboratory.LaboratoryScreen;
 import laboratory.Rooms;
 import laboratory.Scores;
+import nme.Assets;
 import nme.display.Sprite;
+import nme.media.Sound;
+import nme.media.SoundTransform;
 import title.TitleScreen;
 
 class Game extends Screen
@@ -35,6 +39,24 @@ class Game extends Screen
 		addCommand(title.requestFocus, giveFocus);
 		
 		giveFocus(title);
+		
+		// sound
+		Actuate.timer(4.0).onComplete(playSound);
+	}
+	
+	var sound:Sound;
+	var soundVolume:SoundTransform;
+	function playSound():Void
+	{
+		if (sound == null)
+			sound = Assets.getSound("assets/beep.mp3");
+		
+		if (soundTransform == null)
+			soundTransform = new SoundTransform(0.5);
+		
+		sound.play(0, 0, soundTransform);
+		
+		Actuate.timer(4.0).onComplete(playSound);
 	}
 	
 	public function addModule(type:Class<Dynamic>):Dynamic

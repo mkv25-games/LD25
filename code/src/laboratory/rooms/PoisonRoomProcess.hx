@@ -86,4 +86,9 @@ class PoisonRoomProcess extends StandardProcess
 		return RoomFrames.POISON;
 	}
 	
+	override public function interact(recruit:TestSubject):Void
+	{
+		recruit.poison();
+	}
+	
 }

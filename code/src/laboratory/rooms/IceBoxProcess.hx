@@ -86,4 +86,9 @@ class IceBoxProcess extends StandardProcess
 		return RoomFrames.ICEBOX;
 	}
 	
+	override public function interact(recruit:TestSubject):Void
+	{
+		recruit.freeze();
+	}
+	
 }

@@ -80,4 +80,9 @@ class ElectricalRoomProcess extends StandardProcess
 		return RoomFrames.ELECTRICAL;
 	}
 	
+	override public function interact(recruit:TestSubject):Void
+	{
+		recruit.shock();
+	}
+	
 }

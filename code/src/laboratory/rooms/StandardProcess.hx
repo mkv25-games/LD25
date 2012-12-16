@@ -62,4 +62,9 @@ class StandardProcess implements IRoomProcess
 	{
 		return RoomFrames.EMPTY1;
 	}
+	
+	public function interact(recruit:TestSubject):Void
+	{
+		recruit.stand();
+	}
 }

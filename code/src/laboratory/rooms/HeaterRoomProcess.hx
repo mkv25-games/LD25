@@ -86,4 +86,9 @@ class HeaterRoomProcess extends StandardProcess
 		return RoomFrames.HEATERS;
 	}
 	
+	override public function interact(recruit:TestSubject):Void
+	{
+		recruit.burn();
+	}
+	
 }

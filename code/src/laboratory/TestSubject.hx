@@ -57,8 +57,12 @@ class TestSubject extends Sprite, implements IDrawable
 	public var geneticQuality:TestAttribute;
 	public var sanity:TestAttribute;
 	
-	var walkPosition:Int;
-	var walkFrames:Vector<Int>;
+	var animationPosition:Int;
+	var walkFrames:Array<Int>;
+	var burnFrames:Array<Int>;
+	var shockFrames:Array<Int>;
+	var poisonFrames:Array<Int>;
+	var frozenFrames:Array<Int>;
 	
 	public function new(type:Int = 0) 
 	{
@@ -87,9 +91,9 @@ class TestSubject extends Sprite, implements IDrawable
 		drawn = new Signal();
 		selected = new Signal();
 		
-		physicalAbility = new TestAttribute("Physical Ability", 100, -100);
-		mentalAbility = new TestAttribute("Mental Ability", 100, -100);
-		geneticQuality = new TestAttribute("Genetic Quality", 100, -100);
+		physicalAbility = new TestAttribute("Physical Ability", 200, -200);
+		mentalAbility = new TestAttribute("Mental Ability", 200, -200);
+		geneticQuality = new TestAttribute("Genetic Quality", 200, -200);
 		sanity = new TestAttribute("Sanity", 50, -50);
 		
 		addChild(bitmap);
@@ -101,11 +105,12 @@ class TestSubject extends Sprite, implements IDrawable
 		addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 		addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
 		
-		walkPosition = 0;
-		walkFrames = new Vector();
-		var frames = [FRAME_WALK_ONE, FRAME_STANDING, FRAME_WALK_TWO, FRAME_STANDING];
-		for (frame in frames)
-			walkFrames.push(frame);
+		animationPosition = 0;
+		walkFrames = [FRAME_WALK_ONE, FRAME_STANDING, FRAME_WALK_TWO, FRAME_STANDING];
+		shockFrames = [sprites.getXYFrame(0, 6), sprites.getXYFrame(1, 6)];
+		poisonFrames = [sprites.getXYFrame(2, 6), sprites.getXYFrame(3, 6)];
+		burnFrames = [sprites.getXYFrame(0, 7), sprites.getXYFrame(1, 7)];
+		frozenFrames = [sprites.getXYFrame(2, 7), sprites.getXYFrame(3, 7)];
 		
 		think();
 		mouseEnabled = false;
@@ -147,13 +152,13 @@ class TestSubject extends Sprite, implements IDrawable
 		g.endFill();
 		
 		var format = healthText.defaultTextFormat;
-		var font = Assets.getFont("assets/orator.otf");
+		var font = Assets.getFont("assets/trebuchet.ttf");
 		format.font = font.fontName;
 		
 		var text = healthText;
 		text.text = name;
-		text.width = r.width + 40;
-		text.height = 20;
+		text.width = r.width + 30;
+		text.height = 24;
 		text.x = - text.width / 2;
 		text.y = -bitmap.height - text.height - r.height;
 		
@@ -172,10 +177,10 @@ class TestSubject extends Sprite, implements IDrawable
 	
 	public function walk():Void
 	{
-		frame = walkFrames[walkPosition % walkFrames.length];
-		walkPosition++;
-		if (walkPosition >= cast walkFrames.length)
-			walkPosition = 0;
+		frame = walkFrames[animationPosition % walkFrames.length];
+		animationPosition++;
+		if (animationPosition >= cast walkFrames.length)
+			animationPosition = 0;
 		
 		target.x = Math.floor(target.x);
 		target.y = Math.floor(target.y);
@@ -191,6 +196,10 @@ class TestSubject extends Sprite, implements IDrawable
 		if (x == target.x && y == target.y)
 		{
 			frame = FRAME_STANDING;
+			if (room != null)
+			{
+				room.roomProcess.interact(this);
+			}
 		}
 		
 		walking.dispatch(this);
@@ -232,12 +241,73 @@ class TestSubject extends Sprite, implements IDrawable
 		draw();
 		drawHealthBar();
 		
-		Actuate.timer(0.6).onComplete(unstun);
+		Actuate.timer(0.6).onComplete(standup);
+	}
+	
+	function standup():Void
+	{
+		if (room != null)
+		{
+			room.roomProcess.interact(this);
+		}
+		else
+		{
+			unstun();
+		}
 	}
 	
 	public function unstun():Void
 	{
 		isStunned = false;
+		
+		frame = FRAME_STANDING;
+		draw();
+	}
+	
+	public function burn():Void
+	{
+		isStunned = true;
+		
+		Actuate.timer(0.05).onComplete(animate, [burnFrames, 24]);
+		Actuate.timer(1.3).onComplete(unstun);
+	}
+	
+	public function freeze():Void
+	{
+		isStunned = true;
+		
+		Actuate.timer(0.05).onComplete(animate, [frozenFrames, 16]);
+		Actuate.timer(0.9).onComplete(unstun);
+	}
+	
+	public function poison():Void
+	{
+		isStunned = true;
+		
+		Actuate.timer(0.05).onComplete(animate, [poisonFrames, 16]);
+		Actuate.timer(0.9).onComplete(unstun);
+	}
+	
+	public function shock():Void
+	{
+		isStunned = true;
+		
+		Actuate.timer(0.05).onComplete(animate, [shockFrames, 16]);
+		Actuate.timer(0.9).onComplete(unstun);
+	}
+	
+	function animate(animation:Array<Int>, repeats:Int=0):Void
+	{
+		var frame = animation[animationPosition % animation.length];
+		animationPosition++;
+		if (animationPosition >= cast animation.length)
+			animationPosition = 0;
+		
+		bitmap.bitmapData = sprites.get(frame);
+		
+		// repeat
+		if(repeats > 0)
+			Actuate.timer(0.05).onComplete(animate, [animation, repeats - 1]);
 	}
 	
 	public function kill():Void

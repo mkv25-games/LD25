@@ -86,4 +86,21 @@ class GymnasiumProcess extends StandardProcess
 		return RoomFrames.GYMNASIUM;
 	}
 	
+	var interactions:Int = 0;
+	override public function interact(recruit:TestSubject):Void
+	{
+		if (interactions == 0)
+			recruit.shock();
+		if (interactions == 1)
+			recruit.burn();
+		if (interactions == 2)
+			recruit.poison();
+		if (interactions == 3)
+			recruit.freeze();
+		
+		interactions++;
+		if (interactions > 3)
+			interactions = 0;
+	}
+	
 }

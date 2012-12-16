@@ -12,4 +12,5 @@ interface IRoomProcess
 	function purchaseName():String;
 	function purchaseCost():Float;
 	function roomFrame():Int;
+	function interact(recruit:TestSubject):Void;
 }
