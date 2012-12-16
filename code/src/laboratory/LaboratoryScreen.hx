@@ -1,11 +1,13 @@
 package laboratory;
 
 import com.eclecticdesignstudio.motion.Actuate;
+import core.interfaces.IDrawable;
 import core.Screen;
 import core.Signal;
 import nme.Assets;
 import nme.display.Bitmap;
 import nme.display.Sprite;
+import nme.Vector;
 
 class LaboratoryScreen extends Screen
 {
@@ -13,7 +15,10 @@ class LaboratoryScreen extends Screen
 	public var layerDecals:Sprite;
 	
 	public var ready:Signal;
-	public var rooms:Rooms;
+	
+	public var resortRequired:Bool;
+	public var drawables:Vector<IDrawable>;
+	public var rooms:Rooms;	
 	public var humanResources:HumanResources;
 	
 	public function new() 
@@ -24,19 +29,24 @@ class LaboratoryScreen extends Screen
 		layerDecals = new Sprite();
 		
 		ready = new Signal();
+		
 		screen.bitmapData = Assets.getBitmapData("assets/laboratory.png");
+		resortRequired = false;
+		drawables = new Vector<IDrawable>();
 		rooms = new Rooms();
 		humanResources = new HumanResources();
 		
 		addChild(screen);
+		addChild(rooms);
 		addChild(layerPeople);
 		addChild(layerDecals);
-		addChild(rooms);
 		
 		humanResources.recruitArrived.add(onRecruitArrived);
 		humanResources.recruitDied.add(onRecruitDied);
 		
 		visible = false;
+		
+		sortDrawables();
 	}
 	
 	public function show(?args:Dynamic):Void
@@ -57,7 +67,7 @@ class LaboratoryScreen extends Screen
 		// recruit the initial test subjects
 		for (i in 0...8)
 		{
-			Actuate.timer(i * 0.4).onComplete(humanResources.recruitTestSubject);
+			Actuate.timer(i * 0.15).onComplete(humanResources.recruitTestSubject);
 		}
 	}
 	
@@ -72,6 +82,8 @@ class LaboratoryScreen extends Screen
 		recruit.y = recruit.target.y;
 		
 		recruit.fallen.add(onRecruitFallen);
+		recruit.drawn.add(onRecruitDrawn);
+		drawables.push(recruit);
 		
 		recruit.draw();
 		recruit.fadeIn();
@@ -80,6 +92,10 @@ class LaboratoryScreen extends Screen
 	function onRecruitDied(hr:HumanResources):Void
 	{
 		var recruit = hr.freshestCorpse();
+		
+		recruit.fallen.remove(onRecruitFallen);
+		recruit.drawn.remove(onRecruitDrawn);
+		drawables.splice(drawables.indexOf(recruit), 1);
 		
 		Actuate.timer(1.0).onComplete(moveRecruitToRecycling, [recruit]);
 	}
@@ -104,11 +120,39 @@ class LaboratoryScreen extends Screen
 		{
 			if (room.boundary.contains(recruit.x, recruit.y))
 			{
-				moveRecruitToRoom(recruit, room);
+				recruit.room = room;
+				recruit.target.x = recruit.x;
+				recruit.target.y = recruit.y;
+				// moveRecruitToRoom(recruit, room);
 				return;
 			}
 		}
 		
 		moveRecruitToRoom(recruit, rooms.waitingRoom);
+	}
+	
+	function onRecruitDrawn(recruit:TestSubject):Void
+	{
+		resortRequired = true;
+	}
+	
+	function sortDrawables():Void
+	{
+		if (resortRequired)
+		{
+			drawables.sort(sortDrawablesByDepth);
+			for (drawable in drawables)
+				drawable.artwork.parent.addChild(drawable.artwork);
+		}
+		Actuate.timer(0.4).onComplete(sortDrawables);
+	}
+	
+	function sortDrawablesByDepth(a:IDrawable, b:IDrawable):Int
+	{
+		if (a.sortDepth > b.sortDepth)
+			return 1;
+		if (a.sortDepth < b.sortDepth)
+			return -1;
+		return 0;
 	}
 }

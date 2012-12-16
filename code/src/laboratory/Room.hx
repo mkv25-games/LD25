@@ -2,6 +2,7 @@ package laboratory;
 import com.eclecticdesignstudio.motion.Actuate;
 import com.eclecticdesignstudio.motion.easing.Quad;
 import nme.display.Sprite;
+import nme.events.MouseEvent;
 import nme.geom.Point;
 import nme.geom.Rectangle;
 
@@ -23,29 +24,37 @@ class Room extends Sprite
 		g.drawRect(boundary.x, boundary.y, boundary.width, boundary.height);
 		g.endFill();
 		
+		addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+		addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+		
 		hide();
 	}
 	
 	public function highlight(?args:Dynamic):Void
 	{
 		alpha = 0.5;
-		visible = true;
 	}
 	
 	public function hide(?args:Dynamic):Void
 	{
-		visible = false;
+		alpha = 0.0;
 	}
 	
 	public function flash(?args:Dynamic):Void
 	{
+		mouseEnabled = false;
 		alpha = 0.0;
 		Actuate.timer(offset * 0.1).onComplete(doFlash);
 	}
 	
 	function doFlash():Void
 	{
-		Actuate.tween(this, 0.1, { alpha: 0.9 } ).reflect().repeat(7).ease(Quad.easeIn);
+		Actuate.tween(this, 0.1, { alpha: 0.9 } ).reflect().repeat(7).ease(Quad.easeIn).autoVisible(false).onComplete(onFlashComplete);
+	}
+	
+	function onFlashComplete():Void
+	{
+		mouseEnabled = true;
 	}
 	
 	public function assignCenter(point:Point):Void
@@ -57,8 +66,23 @@ class Room extends Sprite
 	public function assignRandomWithinBounds(point:Point):Void
 	{
 		var padding:Int = 20;
-		point.x = boundary.x + padding + ((boundary.width - padding * 2) * Math.random());
-		point.y = boundary.y + padding + ((boundary.height - padding * 2) * Math.random());
+		var x = boundary.x + padding;
+		var y = boundary.y + padding;
+		var w = boundary.width - (padding * 2);
+		var h = boundary.height - (padding * 2);
+		
+		point.x = x + Math.random() * w;
+		point.y = y + Math.random() * h;
+	}
+	
+	function onMouseOver(e:MouseEvent):Void
+	{
+		highlight();
+	}
+	
+	function onMouseOut(e:MouseEvent):Void
+	{
+		hide();
 	}
 	
 }
