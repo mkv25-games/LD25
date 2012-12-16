@@ -152,7 +152,7 @@ class TestSubject extends Sprite, implements IDrawable
 		text.setTextFormat(format);
 		text.embedFonts = true;
 		text.text = name;
-		text.width = r.width;
+		text.width = r.width + 40;
 		text.height = 20;
 		text.mouseEnabled = false;
 		text.selectable = false;
