@@ -60,7 +60,7 @@ class Scores extends Sprite
 	{
 		var value = score.value;
 		
-		if (value >= 1001)
+		if (value >= 1000)
 			rewardScreens.showImage(RewardScreens.RS09_RESEARCH_01);
 		if (value >= 150000)
 			rewardScreens.showImage(RewardScreens.RS10_RESEARCH_02);
@@ -74,7 +74,7 @@ class Scores extends Sprite
 	{
 		var value = score.value;
 		
-		if (value >= 1000)
+		if (value >= 1001)
 			rewardScreens.showImage(RewardScreens.RS13_MONEY_01);
 		if (value >= 150000)
 			rewardScreens.showImage(RewardScreens.RS14_MONEY_02);

@@ -64,7 +64,8 @@ class RewardScreens extends Sprite
 		
 		var bitmapData = Assets.getBitmapData(imageAsset);
 		var screen = new RewardScreen(bitmapData);
-		show(screen);
+		
+		Actuate.timer(1.0).onComplete(show, [screen]);
 		
 		index.set(imageAsset, true);
 	}
