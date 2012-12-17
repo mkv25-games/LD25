@@ -53,10 +53,10 @@ class Game extends Screen
 		if (sound == null)
 			sound = Assets.getSound("assets/beep.mp3");
 		
-		if (soundTransform == null)
-			soundTransform = new SoundTransform(0.5);
+		if (soundVolume == null)
+			soundVolume = new SoundTransform(0.5);
 		
-		sound.play(0, 0, soundTransform);
+		sound.play(0, 0, soundVolume);
 		
 		Actuate.timer(4.0).onComplete(playSound);
 	}
