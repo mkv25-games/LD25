@@ -248,6 +248,7 @@ class TestSubject extends Sprite, implements IDrawable
 	{
 		if (room != null)
 		{
+			isStunned = false;
 			room.roomProcess.interact(this);
 		}
 		else

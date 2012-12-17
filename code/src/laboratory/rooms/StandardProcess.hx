@@ -2,6 +2,7 @@ package laboratory.rooms;
 import core.Signal;
 import game.Global;
 import laboratory.interfaces.IRoomProcess;
+import laboratory.rewards.RewardScreens;
 import laboratory.Room;
 import laboratory.Scores;
 import laboratory.TestSubject;
@@ -9,6 +10,7 @@ import laboratory.TestSubject;
 class StandardProcess implements IRoomProcess
 {
 	@global var scores:Scores;
+	@global var rewardScreens:RewardScreens;
 	
 	public var processed:Signal;
 	public var upgraded:Signal;
@@ -16,6 +18,7 @@ class StandardProcess implements IRoomProcess
 	public function new()  
 	{
 		scores = Global.scores;
+		rewardScreens = Global.rewardScreens;
 		
 		processed = new Signal();
 		upgraded = new Signal();

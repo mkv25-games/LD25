@@ -2,6 +2,7 @@ package laboratory.rooms;
 import core.Signal;
 import game.Global;
 import laboratory.interfaces.IRoomProcess;
+import laboratory.rewards.RewardScreens;
 import laboratory.Room;
 import laboratory.Scores;
 import laboratory.TestSubject;
@@ -101,6 +102,8 @@ class GymnasiumProcess extends StandardProcess
 		interactions++;
 		if (interactions > 3)
 			interactions = 0;
+		
+		rewardScreens.showImage(RewardScreens.RS04_GYMNASIUM);
 	}
 	
 }

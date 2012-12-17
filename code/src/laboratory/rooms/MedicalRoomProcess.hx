@@ -2,6 +2,7 @@ package laboratory.rooms;
 import core.Signal;
 import game.Global;
 import laboratory.interfaces.IRoomProcess;
+import laboratory.rewards.RewardScreens;
 import laboratory.Room;
 import laboratory.Scores;
 import laboratory.TestSubject;
@@ -46,9 +47,13 @@ class MedicalRoomProcess extends StandardProcess
 			}
 		}
 		
-		if(cost > 0)
+		if (cost > 0)
+		{
 			scores.moneyScore.subtract(cost);
 			
+			rewardScreens.showImage(RewardScreens.RS06_MEDICAL_WARD);
+		}
+		
 		processed.dispatch(this);
 	}
 	

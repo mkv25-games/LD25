@@ -26,7 +26,7 @@ class HumanResources
 	
 	public function recruitTestSubject():Void
 	{
-		var type = Math.round(Math.random() * 1000) % 4;
+		var type = Math.round(Math.random() * 1000) % 5;
 		var recruit = new TestSubject(type);
 		testSubjects.push(recruit);
 		

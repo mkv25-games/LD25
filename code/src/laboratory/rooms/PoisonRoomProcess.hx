@@ -2,6 +2,7 @@ package laboratory.rooms;
 import core.Signal;
 import game.Global;
 import laboratory.interfaces.IRoomProcess;
+import laboratory.rewards.RewardScreens;
 import laboratory.Room;
 import laboratory.Scores;
 import laboratory.TestSubject;
@@ -89,6 +90,8 @@ class PoisonRoomProcess extends StandardProcess
 	override public function interact(recruit:TestSubject):Void
 	{
 		recruit.poison();
+		
+		rewardScreens.showImage(RewardScreens.RS05_VIRAL_MECHANISMS);
 	}
 	
 }

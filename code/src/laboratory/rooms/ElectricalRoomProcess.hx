@@ -2,6 +2,8 @@ package laboratory.rooms;
 import core.Signal;
 import game.Global;
 import laboratory.interfaces.IRoomProcess;
+import laboratory.rewards.RewardScreen;
+import laboratory.rewards.RewardScreens;
 import laboratory.Room;
 import laboratory.Scores;
 import laboratory.TestSubject;
@@ -83,6 +85,8 @@ class ElectricalRoomProcess extends StandardProcess
 	override public function interact(recruit:TestSubject):Void
 	{
 		recruit.shock();
+		
+		rewardScreens.showImage(RewardScreens.RS03_ELECTRO_SHOCK);
 	}
 	
 }

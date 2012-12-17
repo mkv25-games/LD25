@@ -1,5 +1,6 @@
 package laboratory;
 import com.eclecticdesignstudio.motion.Actuate;
+import core.Signal;
 import core.Text;
 import nme.display.Sprite;
 import nme.text.TextField;
@@ -14,13 +15,14 @@ class ScoreBox extends Sprite
 	
 	public var value(default, null):Float;
 	public var prefix:String;
+	public var valueChanged:Signal;
 	
 	public function new(name:String, color:Int, x:Float, y:Float, prefix:String='') 
 	{
 		super();
 		
 		this.name = name;
-		text = Text.makeTextField("assets/trebuchet.ttf", 40, color, TextFormatAlign.LEFT);
+		text = Text.makeTextField("assets/trebuchet.ttf", 32, color, TextFormatAlign.LEFT);
 		text.width = 120;
 		text.height = 52;
 		this.x = x;
@@ -31,6 +33,7 @@ class ScoreBox extends Sprite
 		suffix = '';
 		
 		this.prefix = prefix;
+		this.valueChanged = new Signal();
 		
 		addChild(text);
 	}
@@ -39,6 +42,7 @@ class ScoreBox extends Sprite
 	{
 		value = to;
 		displayValue = value;
+		valueChanged.dispatch(this);
 		
 		updateDisplayValue();
 	}
@@ -50,6 +54,7 @@ class ScoreBox extends Sprite
 		if (diff < 2)
 		{
 			setValue(to);
+			return;
 		}
 		else if (diff < 10)
 		{
@@ -59,6 +64,8 @@ class ScoreBox extends Sprite
 		{
 			Actuate.tween(this, 1.5, { displayValue:to } ).onUpdate(updateDisplayValue);
 		}
+		
+		valueChanged.dispatch(this);
 	}
 	
 	function updateDisplayValue():Void

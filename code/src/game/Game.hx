@@ -5,6 +5,7 @@ import core.Screen;
 import core.Signal;
 import laboratory.HumanResources;
 import laboratory.LaboratoryScreen;
+import laboratory.rewards.RewardScreens;
 import laboratory.Rooms;
 import laboratory.Scores;
 import nme.Assets;
@@ -25,6 +26,7 @@ class Game extends Screen
 		super();
 		
 		// define static models
+		Global.rewardScreens = new RewardScreens();
 		Global.scores = new Scores();
 		Global.humanResources = new HumanResources();
 		Global.rooms = new Rooms();

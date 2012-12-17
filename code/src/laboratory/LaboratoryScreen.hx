@@ -5,6 +5,7 @@ import core.interfaces.IDrawable;
 import core.Screen;
 import core.Signal;
 import game.Global;
+import laboratory.rewards.RewardScreens;
 import nme.Assets;
 import nme.display.Bitmap;
 import nme.display.Sprite;
@@ -15,6 +16,7 @@ class LaboratoryScreen extends Screen
 	@global var scores:Scores;
 	@global var rooms:Rooms;	
 	@global var humanResources:HumanResources;
+	@global var rewardScreens:RewardScreens;
 	
 	public var layerPeople:Sprite;
 	public var layerDecals:Sprite;
@@ -32,6 +34,7 @@ class LaboratoryScreen extends Screen
 		scores = Global.scores;
 		rooms = Global.rooms;
 		humanResources = Global.humanResources;
+		rewardScreens = Global.rewardScreens;
 		
 		super();
 		
@@ -48,6 +51,7 @@ class LaboratoryScreen extends Screen
 		addChild(rooms);
 		addChild(layerPeople);
 		addChild(layerDecals);
+		addChild(rewardScreens);
 		
 		humanResources.recruitArrived.add(onRecruitArrived);
 		humanResources.recruitDied.add(onRecruitDied);
@@ -67,9 +71,9 @@ class LaboratoryScreen extends Screen
 		requestFocus.dispatch(this);
 		
 		scores.employeeScore.setValue(0);
-		scores.deathScore.setValue(100);
-		scores.researchScore.setValue(1000);
-		scores.moneyScore.setValue(500000000);
+		scores.deathScore.setValue(0);
+		scores.researchScore.setValue(0);
+		scores.moneyScore.setValue(0);
 	}
 	
 	function onShowComplete():Void
@@ -89,6 +93,8 @@ class LaboratoryScreen extends Screen
 		{
 			Actuate.timer(i * 0.15).onComplete(humanResources.recruitTestSubject);
 		}
+		
+		rewardScreens.showImage(RewardScreens.RS01_EMPLOYEES);
 	}
 	
 	function onRecruitArrived(hr:HumanResources):Void

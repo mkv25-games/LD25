@@ -18,7 +18,6 @@ class RecyclingRoomProcess extends StandardProcess
 	override public function process(employees:List<TestSubject>):Void
 	{		
 		var profit:Float = 0;
-		var research:Float = 0;
 		var bonus:Float = levelBonus();
 		for (employee in employees)
 		{
@@ -26,7 +25,6 @@ class RecyclingRoomProcess extends StandardProcess
 			{
 				employee.physicalAbility.subtract(10);
 				profit += bonus;
-				research += bonus;
 			}
 			
 			if (employee.mentalAbility.value > 0)
@@ -47,9 +45,6 @@ class RecyclingRoomProcess extends StandardProcess
 		
 		if(profit > 0)
 			scores.moneyScore.add(profit);
-			
-		if (research > 0)
-			scores.researchScore.add(research);
 			
 		processed.dispatch(this);
 	}
